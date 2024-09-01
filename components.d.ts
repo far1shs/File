@@ -36,6 +36,7 @@ declare module 'vue' {
     Menubar: typeof import('primevue/menubar')['default']
     Message: typeof import('primevue/message')['default']
     PanelMenu: typeof import('primevue/panelmenu')['default']
+    Password: typeof import('primevue/password')['default']
     Popover: typeof import('primevue/popover')['default']
     ProgressBar: typeof import('primevue/progressbar')['default']
     ProgressSpinner: typeof import('primevue/progressspinner')['default']

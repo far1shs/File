@@ -13,7 +13,12 @@
               <span @click="win.open('https://github.com/far1shs/File')"
                     style="cursor: pointer; display: flex; align-items: center;"><i
                   style="margin-right: 5px" class="pi pi-github"/>GitHub</span>
-              <span v-show="screenWidth < 750" @click="menuShow = true" style="cursor: pointer; display: flex; align-items: center;"><i
+              <span style="display: flex; align-items: center;"><i
+                  style="margin-right: 5px" class="pi pi-server"/>
+                {{ apiList?.name }}
+              </span>
+              <span v-show="screenWidth < 750" @click="menuShow = true"
+                    style="cursor: pointer; display: flex; align-items: center;"><i
                   style="margin-right: 5px" class="pi pi-inbox"/>磁盘管理</span>
               <span @click="router.push('/settings')" style="cursor: pointer; display: flex; align-items: center;"><i
                   style="margin-right: 5px" class="pi pi-cog"/>设置</span>
@@ -31,15 +36,15 @@
           <div
               style="position: fixed; background-color: white; width: 100%; z-index: 100; padding: 18px;">
             <div :style="screenWidth > 750 ? 'margin-right: 240px;' : ''" class="toolbar">
-              <Button :disabled="loading" @click="back" severity="secondary" outlined icon="pi pi-angle-left"/>
-              <Button :loading="loading" @click="refresh" severity="secondary" outlined icon="pi pi-refresh"/>
+              <Button :disabled="ressLoading" @click="back" severity="secondary" outlined icon="pi pi-angle-left"/>
+              <Button :loading="ressLoading" @click="refresh" severity="secondary" outlined icon="pi pi-refresh"/>
               <InputText v-model="path" @keydown.enter="getRess(path)" class="input-text"/>
               <Button severity="secondary" outlined icon="pi pi-bars"/>
             </div>
           </div>
 
           <div style="margin-top: 60px;">
-            <div v-if="loading" style="margin-top: 25%">
+            <div v-if="ressLoading" style="margin-top: 25%">
               <n-flex vertical style="text-align: center;">
                 <ProgressSpinner style="width: 50px; height: 50px;" strokeWidth="3" animationDuration=".8s"/>
               </n-flex>
@@ -55,9 +60,7 @@
               <p>出错了, 请检查控制台(F12)-网络</p>
             </div>
 
-            <div v-else>
-              <r-list :list="ress"/>
-            </div>
+            <r-list v-else :list="ress"/>
           </div>
 
           <n-drawer v-model:show="menuShow" placement="bottom" style="height: 100%; border: 0">
@@ -81,16 +84,17 @@ import {useRouter} from "vue-router";
 import {screenWidth} from "../script/screen.ts";
 import RNavigationBar from "../component/r-navigation-bar.vue";
 import RList from "../component/r-list.vue";
-import {path, disk, ress, loading, error} from "../model";
+import {path, disk, ress, ressLoading, error, diskLoading, apiList} from "../model";
 import {getDisk, getRess} from "../script/action.ts";
 import {menuShow} from "../model/navigation.ts";
-import {useMessage} from "naive-ui";
+import {getApiListItem} from "../script/tool.ts";
 
 const router = useRouter();
 const win = window;
-const message = useMessage();
+const local = localStorage;
 
-if (!localStorage.getItem("initial")) router.push("/welcome");
+
+if (!local.getItem("initial")) router.push("/welcome");
 
 getDisk();
 

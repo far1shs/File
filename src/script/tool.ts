@@ -9,7 +9,7 @@ export function formatBytes(bytes: number, decimals: number = 2): string {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
-interface Item {
+export interface Item {
     id: string;
     name: string;
     path: string;

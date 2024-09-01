@@ -12,12 +12,17 @@ import createSiteRouter from "./routes/router.ts";
 import axios from "axios";
 import AnimateOnScroll from "primevue/animateonscroll";
 import {getApiListItem} from "./script/tool.ts";
+import {apiList} from "./model";
 
 const app = createApp(App);
 const router = createSiteRouter(routes);
+
+apiList.value = getApiListItem(String(localStorage.getItem("api")), JSON.parse(String(localStorage.getItem("api_list"))));
 if (localStorage.getItem("initial")) {
-    const res = getApiListItem(String(localStorage.getItem("api")), JSON.parse(String(localStorage.getItem("api_list"))));
-    axios.defaults.baseURL = res?.path;
+    axios.defaults.baseURL = apiList.value?.path;
+}
+if (localStorage.getItem("initial")) {
+    axios.defaults.headers["X-API-KEY"] = String(apiList.value?.key);
 }
 axios.defaults.timeout = 5000;
 

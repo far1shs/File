@@ -117,6 +117,7 @@ function selectItem(path: string) {
 
 .flex-container {
   width: 100%;
+  margin-top: -2px;
   margin-right: 15px;
 }
 

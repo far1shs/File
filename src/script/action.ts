@@ -1,6 +1,7 @@
 import axios from "axios";
-import {disk, error, loading, ress, path} from "../model";
+import {disk, error, ressLoading, ress, path} from "../model";
 import {MessageApiInjection} from "naive-ui/es/message/src/MessageProvider";
+import {MessageReactive} from "naive-ui/lib";
 
 export function getDisk() {
     const req = axios.get(`/get_disk`)
@@ -9,13 +10,13 @@ export function getDisk() {
         getRess(String(localStorage.getItem("path")));
     });
     req.catch(() => {
-        
+
     });
-    req.finally(() => loading.value = false);
+    req.finally(() => ressLoading.value = false);
 }
 
 export function getRess(_path: string) {
-    loading.value = true;
+    ressLoading.value = true;
     path.value = _path;
     localStorage.setItem("path", _path);
     error.value = false;
@@ -28,17 +29,35 @@ export function getRess(_path: string) {
     req.catch(() => {
         error.value = true;
     });
-    req.finally(() => loading.value = false);
+    req.finally(() => ressLoading.value = false);
 }
 
-export function openFile(path: string, message: MessageApiInjection) {
-    const req = axios.post("/open_file", {
-        "path": path
+
+export function simpleRequest(_path: string, file_path: string, message: MessageApiInjection) {
+    let messageReactive: MessageReactive | null = null
+
+    if (!messageReactive) {
+        messageReactive = message.loading("加载中", {
+            duration: 0
+        })
+    }
+
+    function removeMessage() {
+        if (messageReactive) {
+            messageReactive.destroy()
+            messageReactive = null
+        }
+    }
+
+    const req = axios.post(_path, {
+        "path": file_path
     })
     req.then(() => {
         message.success("成功");
+        getRess(path.value);
     });
-    req.catch(() => {
-        
+    req.catch((err) => {
+        message.error(err.response.data.message);
     });
+    req.finally(() => removeMessage())
 }

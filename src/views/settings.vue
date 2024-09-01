@@ -25,13 +25,18 @@
         <n-flex justify="center">
           <n-flex vertical style="margin: 20px; width: 300px">
             <p>您的所有设置都会存储到本地 (localStorage)</p>
-            <p>更改API</p>
+            <p>更改API (管理当前API)</p>
             <Select v-model="api" :options="apiList" option-label="name" option-value="id" placeholder="选择API"/>
-            <Button label="管理"/>
+            <Button @click="toggleManageCard($event)" label="管理"/>
+            <p>版本更新对话框</p>
+            <ToggleSwitch v-model="listenFile"/>
             <p>本地打开(适合本地运行的API, 不使用在线编辑器, 预览等等, 类似一个web版本的资源管理器)</p>
             <ToggleSwitch @click="localOpenClick" v-model="localOpen"/>
             <p>监听文件变化(会有些资源损耗)</p>
             <ToggleSwitch @click="listenFileClick" v-model="listenFile"/>
+            <p>删除文件对话框(不推荐关闭)</p>
+            <ToggleSwitch v-model="listenFile"/>
+            <p style="color: grey; text-align: center">Panel: v0.0.1 API: 0.0.1 Develop Far1sh</p>
             <Button @click="deleteLocalStorageShow = true" severity="danger" label="清空缓存"/>
           </n-flex>
         </n-flex>
@@ -47,6 +52,16 @@
           </n-flex>
         </div>
       </Dialog>
+
+      <Popover :unstyled="true" ref="manageCard">
+        <n-card style="width: 300px; margin-top: 2px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1)" size="small">
+          <n-flex vertical>
+            <Button label="添加"/>
+            <Button label="修改"/>
+            <Button severity="danger" label="删除"/>
+          </n-flex>
+        </n-card>
+      </Popover>
     </n-layout-content>
   </n-layout>
 </template>
@@ -57,6 +72,7 @@ import {ref} from "vue";
 
 const router = useRouter();
 const win = window;
+const manageCard = ref();
 
 const api = ref(localStorage.getItem("api"));
 const apiList = ref(JSON.parse(String(localStorage.getItem("api_list"))));
@@ -78,6 +94,10 @@ function localOpenClick() {
 
 function listenFileClick() {
   localStorage.setItem("listen_file", String(!listenFile.value))
+}
+
+function toggleManageCard (event: Event) {
+  manageCard.value.toggle(event);
 }
 </script>
 

@@ -7,11 +7,9 @@
           <h2>欢迎使用 Far1sh 的文件管理器</h2>
           <p>你需要完成初始设置</p>
         </div>
-        <InputText v-model="apiName" style="width: 300px" type="text" placeholder="API 名字(怎么好听怎么来)"/>
-        <InputText v-model="apiPath" style="width: 300px" type="text" placeholder="API 地址"/>
-        <InputText v-model="apiKey" style="width: 300px" type="text" placeholder="API KEY"/>
-        <!--        <Select disabled style="width: 300px" v-model="selectedCity" :options="cities" optionLabel="name"-->
-        <!--                placeholder="语言 Language"/>-->
+        <InputText v-model="apiName" style="width: 300px" placeholder="API 名字"/>
+        <InputText v-model="apiPath" style="width: 300px" placeholder="API 地址"/>
+        <InputText v-model="apiKey" style="width: 300px" placeholder="API KEY"/>
         <Button :loading="loading" @click="save" label="保存"/>
       </n-flex>
     </n-flex>
@@ -54,7 +52,8 @@ function save() {
   loading.value = true;
 
   axios.get("/get_disk", {
-    baseURL: apiPath.value
+    baseURL: apiPath.value,
+    headers: {"X-API-KEY": apiKey.value}
   }).then((res) => {
     if (res.data.status === 200) {
       const id = uuidv4();
@@ -69,7 +68,7 @@ function save() {
       message.error("出错了, 请查看 控制台-网络 中 get_disk 请求发生的问题");
     }
   }).catch(() => {
-    message.error("出错了, 请查看 控制台 中 发生的问题");
+    message.error("出错了, 请查看 控制台 中发生的问题");
   }).finally(() => loading.value = false);
 }
 

@@ -2,13 +2,19 @@
   <div class="side-navigation">
     <n-scrollbar>
       <ul class="menu">
-        <li @contextmenu="onImageRightClick($event, item)" @click="item.is_directory ? getRess(item.path) : openFile(item.path, message)"
+        <li @contextmenu="handleEllipsisClick($event, item)"
+            @click="item.is_directory ? getRess(item.path) : ''"
             v-for="item in props.list" :key="item.path">
           <div class="icon-label">
             <i v-if="item.is_directory" class="pi pi-folder"></i>
             <i v-else class="pi pi-file"></i>
-            <div style="width: 100vh">
+            <div style="width: 100%">
               <span class="label">{{ item.name }}</span>
+            </div>
+            <div style="margin-right: 8px">
+              <div class="clickable-area" @click.stop="handleEllipsisClick($event, item)">
+                <i style="margin-left: 12px" class="pi pi-ellipsis-h ellipsis-icon"/>
+              </div>
             </div>
           </div>
         </li>
@@ -20,8 +26,10 @@
 
 <script setup lang="ts">
 import {defineProps, ref} from "vue";
-import {getRess, openFile} from "../script/action.ts";
+import {getRess, simpleRequest} from "../script/action.ts";
 import {useMessage} from "naive-ui";
+import axios from "axios";
+import {path} from "../model";
 
 const message = useMessage();
 const props = defineProps<{
@@ -31,18 +39,38 @@ const menu = ref();
 const item_data = ref();
 const items = ref([
   {
-    label: 'Roles',
-    icon: 'pi pi-users',
+    label: "下载",
+    icon: "pi pi-download",
     command: () => {
-      message.success("123")
+      window.open(`${axios.defaults.baseURL}/down_file?path=${item_data.value.path}`)
+    }
+  }, {
+    separator: true
+  }, {
+    label: "新建",
+    icon: "pi pi-plus",
+    command: () => simpleRequest("/new_file", item_data.value.path, message)
+  }, {
+    label: "压缩",
+    icon: "pi pi-bolt",
+    command: () => simpleRequest("/zip_file", item_data.value.path, message)
+  }, {
+    label: "重命名",
+    icon: "pi pi-pencil",
+    command: () => simpleRequest("/edit_file", item_data.value.path, message)
+  }, {
+    label: "删除",
+    icon: "pi pi-trash",
+    command: () => {
+      simpleRequest("/delete_file", item_data.value.path, message);
     }
   },
 ]);
 
-const onImageRightClick = (event: any, data: any) => {
+function handleEllipsisClick(event: any, data: any) {
   item_data.value = data;
   menu.value.show(event);
-};
+}
 </script>
 
 <style scoped>
@@ -68,32 +96,25 @@ const onImageRightClick = (event: any, data: any) => {
 
 .side-navigation .icon-label {
   display: flex;
-  align-items: center;
   justify-content: flex-start;
+  align-items: center;
+  width: 100%;
 }
 
 .side-navigation .icon-label i {
   font-size: 1.5em;
   color: black;
-  margin-right: 12px; /* 图标和标签之间的间距 */
+  margin-right: 12px;
 }
 
-.side-navigation .icon-label .label {
-  margin-top: 2px;
+.label {
   font-size: 1em;
   color: black;
-}
-
-.side-navigation .icon-label .progress {
-  border: 0;
+  vertical-align: middle;
 }
 
 .side-navigation li:hover {
   background-color: #e9ecef;
-}
-
-.side-navigation li.active {
-  background-color: black;
 }
 
 .side-navigation li.active .icon-label i,
@@ -109,5 +130,19 @@ const onImageRightClick = (event: any, data: any) => {
   flex-direction: column;
   align-items: flex-start;
 }
-</style>
 
+.clickable-area {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+.ellipsis-icon {
+  font-size: 1.2em;
+  color: black;
+}
+</style>

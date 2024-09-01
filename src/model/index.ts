@@ -1,6 +1,8 @@
 import {ref} from "vue";
 
-export const loading = ref(true);
+export const diskLoading = ref(true);
+export const ressLoading = ref(true);
+export const apiList: any = ref();
 export const error = ref(false);
 export const path = ref();
 export const disk = ref();
