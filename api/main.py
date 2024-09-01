@@ -1,13 +1,15 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 import uvicorn
-from script import get_disk, get_ress
+from script import get_disk, get_ress, get_file, open_file, upload_file
 
 app = FastAPI(docs_url=None)
 
 app.include_router(get_disk.app)
 app.include_router(get_ress.app)
+app.include_router(get_file.app)
+app.include_router(open_file.app)
+app.include_router(upload_file.app)
 
 app.add_middleware(
     CORSMiddleware,

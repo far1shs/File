@@ -1,6 +1,6 @@
 import os
 import time
-from fastapi import APIRouter
+from fastapi import APIRouter, Body
 from fastapi.responses import JSONResponse
 
 app = APIRouter()
@@ -16,10 +16,10 @@ def custom_sort_key(item):
     return (not is_directory, num_part, name)
 
 
-@app.get("/get_ress")
-async def index(path: str):
+@app.post("/get_ress")
+async def index(path: str = Body(..., embed=True)):
     file_info_list = []
-
+    
     try:
         for item in os.listdir(path):
             item_path = os.path.join(path, item)

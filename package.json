@@ -15,6 +15,7 @@
     "chart.js": "^4.4.3",
     "primeicons": "^7.0.0",
     "primevue": "^4.0.0",
+    "pubsub-js": "^1.9.4",
     "uuid": "^10.0.0",
     "vue": "^3.4.29",
     "vue-echarts": "^6.7.3",
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "@primevue/auto-import-resolver": "^4.0.0",
+    "@types/pubsub-js": "^1.8.6",
     "@types/uuid": "^10.0.0",
     "@vitejs/plugin-vue": "^5.0.5",
     "naive-ui": "^2.39.0",

@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Body
 from fastapi.responses import JSONResponse
 from pathlib import Path
 
@@ -6,8 +6,8 @@ from pathlib import Path
 app = APIRouter()
 
 
-@app.get("/get_file")
-async def index(path: str):
+@app.post("/get_file")
+async def index(path: str = Body(..., embed=True)):
     file_path = Path(path)
     if file_path.exists():
         content = file_path.read_text()

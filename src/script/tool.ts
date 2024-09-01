@@ -8,3 +8,14 @@ export function formatBytes(bytes: number, decimals: number = 2): string {
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
+
+interface Item {
+    id: string;
+    name: string;
+    path: string;
+    key: string;
+}
+
+export function getApiListItem(id: string, data: any): Item | undefined {
+    return data.find((item: Item) => item.id === id);
+}

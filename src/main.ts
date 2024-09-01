@@ -10,12 +10,14 @@ import naive from "naive-ui";
 import {routes} from "./routes/routes.ts";
 import createSiteRouter from "./routes/router.ts";
 import axios from "axios";
-import AnimateOnScroll from 'primevue/animateonscroll';
+import AnimateOnScroll from "primevue/animateonscroll";
+import {getApiListItem} from "./script/tool.ts";
 
 const app = createApp(App);
 const router = createSiteRouter(routes);
 if (localStorage.getItem("initial")) {
-    axios.defaults.baseURL = "http://10.48.12.17:1244";
+    const res = getApiListItem(String(localStorage.getItem("api")), JSON.parse(String(localStorage.getItem("api_list"))));
+    axios.defaults.baseURL = res?.path;
 }
 axios.defaults.timeout = 5000;
 

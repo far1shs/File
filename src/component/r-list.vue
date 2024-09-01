@@ -2,7 +2,8 @@
   <div class="side-navigation">
     <n-scrollbar>
       <ul class="menu">
-        <li @contextmenu="onImageRightClick" @click="item.is_directory ? getRess(item.path) : ''" v-for="item in props.list" :key="item.path">
+        <li @contextmenu="onImageRightClick($event, item)" @click="item.is_directory ? getRess(item.path) : openFile(item.path, message)"
+            v-for="item in props.list" :key="item.path">
           <div class="icon-label">
             <i v-if="item.is_directory" class="pi pi-folder"></i>
             <i v-else class="pi pi-file"></i>
@@ -13,25 +14,33 @@
         </li>
       </ul>
     </n-scrollbar>
-    <ContextMenu ref="menu" :model="items" />
+    <ContextMenu ref="menu" :model="items" @hide="item_data = null"/>
   </div>
 </template>
 
 <script setup lang="ts">
 import {defineProps, ref} from "vue";
-import {getRess} from "../script/action.ts";
-import {path} from "../model";
+import {getRess, openFile} from "../script/action.ts";
+import {useMessage} from "naive-ui";
 
+const message = useMessage();
 const props = defineProps<{
   list?: any;
 }>();
 const menu = ref();
+const item_data = ref();
 const items = ref([
-  { label: 'Copy', icon: 'pi pi-copy' },
-  { label: 'Rename', icon: 'pi pi-file-edit' }
+  {
+    label: 'Roles',
+    icon: 'pi pi-users',
+    command: () => {
+      message.success("123")
+    }
+  },
 ]);
 
-const onImageRightClick = (event) => {
+const onImageRightClick = (event: any, data: any) => {
+  item_data.value = data;
   menu.value.show(event);
 };
 </script>

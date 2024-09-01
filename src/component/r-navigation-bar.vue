@@ -2,15 +2,16 @@
   <div class="side-navigation">
     <n-scrollbar>
       <ul class="menu">
-        <li @click="getRess(item.device)" v-for="item in list">
-          <div v-tooltip.bottom="{value: `可用空间: ${formatBytes(item.free)}\n已用空间: ${formatBytes(item.used)}\n总空间: ${formatBytes(item.total)}`, showDelay: 800,}" class="icon-label">
+        <li v-tooltip.bottom="{value: `可用空间: ${formatBytes(item.free)}\n已用空间: ${formatBytes(item.used)}\n总空间: ${formatBytes(item.total)}\n文件系统: ${item.fstype}`, showDelay: 800,}"
+            @click="selectItem(item.device)" v-for="item in props.list" :key="item.device">
+          <div class="icon-label">
             <i class="pi pi-inbox"></i>
-            <n-flex :size="0" vertical>
-              <div>
+            <n-flex :size="0" vertical class="flex-container">
+              <div class="label-container">
                 <span class="label">{{ item.device }}</span>
-                <span style="float: right; margin-top: 0" class="label">{{ formatBytes(item.total) }}</span>
+                <span class="label total-space">{{ formatBytes(item.total) }}</span>
               </div>
-              <ProgressBar style="height: 7px; width: 145px" :showValue="false" :value="item.percent"></ProgressBar>
+              <ProgressBar style="" class="progress-bar" :showValue="false" :value="item.percent"></ProgressBar>
             </n-flex>
           </div>
         </li>
@@ -20,16 +21,20 @@
 </template>
 
 <script setup lang="ts">
-import {useRouter} from "vue-router";
-import {defineProps} from "vue";
+import {defineProps, Ref, ref} from "vue";
 import {formatBytes} from "../script/tool.ts";
 import {getRess} from "../script/action.ts";
-
-const router = useRouter();
+import {menuShow} from "../model/navigation.ts";
 
 const props = defineProps<{
   list?: any;
 }>();
+
+function selectItem(path: string) {
+  getRess(path);
+  menuShow.value = false;
+}
+
 </script>
 
 <style scoped>
@@ -57,6 +62,7 @@ const props = defineProps<{
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  width: 100%;
 }
 
 .side-navigation .icon-label i {
@@ -79,10 +85,6 @@ const props = defineProps<{
   background-color: #e9ecef;
 }
 
-.side-navigation li:active {
-  transform: scale(0.98);
-}
-
 .side-navigation li.active {
   background-color: black;
 }
@@ -99,5 +101,27 @@ const props = defineProps<{
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  width: 100%;
+}
+
+.label-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.total-space {
+  margin-left: auto;
+}
+
+.flex-container {
+  width: 100%;
+  margin-right: 15px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 7px;
 }
 </style>
