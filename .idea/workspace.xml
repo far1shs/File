@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="7391f8bf-4748-4f52-b284-360383c21947" name="更改" comment="提交">
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,11 +62,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Far1sh.File" />
       <recent name="D:\Far1sh.File\src" />
       <recent name="D:\Far1sh.File\public" />
       <recent name="D:\RivFox.Account\public" />
       <recent name="D:\IceLN.Console\public" />
-      <recent name="D:\IceLN.Console\src" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\RivFox.Account\src\views\account" />
@@ -116,7 +117,7 @@
       <workItem from="1725084521466" duration="31999000" />
       <workItem from="1725122682768" duration="259000" />
       <workItem from="1725122950451" duration="577000" />
-      <workItem from="1725123529357" duration="18143000" />
+      <workItem from="1725123529357" duration="18415000" />
     </task>
     <task id="LOCAL-00001" summary="123">
       <option name="closed" value="true" />
@@ -134,7 +135,23 @@
       <option name="project" value="LOCAL" />
       <updated>1725184210745</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="提交">
+      <option name="closed" value="true" />
+      <created>1725184374043</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1725184374043</updated>
+    </task>
+    <task id="LOCAL-00004" summary="提交">
+      <option name="closed" value="true" />
+      <created>1725184427728</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1725184427728</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
