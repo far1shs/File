@@ -1,4 +1,4 @@
-from fastapi import APIRouter, File, UploadFile, Query
+from fastapi import APIRouter, File, UploadFile, Body
 from fastapi.responses import JSONResponse
 import os
 
@@ -6,9 +6,7 @@ app = APIRouter()
 
 
 @app.post("/upload_file")
-async def index(
-    file: UploadFile = File(...), save_path: str = Query(..., description="保存路径")
-):
+async def index(file: UploadFile = File(...), save_path: str = Body(..., embed=True)):
     try:
         if not os.path.exists(save_path):
             os.makedirs(save_path)

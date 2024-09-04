@@ -1,5 +1,5 @@
 import axios from "axios";
-import {disk, error, ressLoading, ress, path} from "../model";
+import {disk, editorContext, editorShow, error, path, ress, ressLoading} from "../model";
 import {MessageApiInjection} from "naive-ui/es/message/src/MessageProvider";
 import {MessageReactive} from "naive-ui/lib";
 
@@ -17,8 +17,8 @@ export function getDisk() {
 
 export function getRess(_path: string) {
     ressLoading.value = true;
-    path.value = _path;
     localStorage.setItem("path", _path);
+    path.value = _path;
     error.value = false;
     const req = axios.post("/get_ress", {
         "path": _path
@@ -32,8 +32,46 @@ export function getRess(_path: string) {
     req.finally(() => ressLoading.value = false);
 }
 
+export function simpleRequest(
+    _path: string,
+    file_path: string,
+    message: MessageApiInjection,
+    {
+        request = true,
+        click = () => {},
+        dataObject = null,
+        data = { path: file_path }
+    }: {
+        request?: Boolean,
+        click?: Function,
+        dataObject?: any,
+        data?: any
+    } = {}
+): void {
+    let messageReactive: MessageReactive | null = null;
 
-export function simpleRequest(_path: string, file_path: string, message: MessageApiInjection) {
+    messageReactive = message.loading("加载中", {
+        duration: 0
+    });
+
+    const req = axios.post(_path, data);
+    req.then(() => {
+        message.success("成功");
+        if (request) getRess(path.value);
+        click(dataObject);
+    });
+    req.catch((err) => {
+        message.error(err.response.data.message);
+    });
+    req.finally(() => {
+        if (messageReactive) {
+            messageReactive.destroy();
+            messageReactive = null;
+        }
+    });
+}
+
+export function editorRequest(path: string, message: MessageApiInjection) {
     let messageReactive: MessageReactive | null = null
 
     if (!messageReactive) {
@@ -49,15 +87,15 @@ export function simpleRequest(_path: string, file_path: string, message: Message
         }
     }
 
-    const req = axios.post(_path, {
-        "path": file_path
+    const req = axios.post("/get_file", {
+        "path": path
     })
-    req.then(() => {
-        message.success("成功");
-        getRess(path.value);
+    req.then((res) => {
+        editorShow.value = true;
+        editorContext.value = res.data.results;
     });
     req.catch((err) => {
         message.error(err.response.data.message);
     });
-    req.finally(() => removeMessage())
+    req.finally(() => removeMessage());
 }

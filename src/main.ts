@@ -17,14 +17,17 @@ import {apiList} from "./model";
 const app = createApp(App);
 const router = createSiteRouter(routes);
 
-apiList.value = getApiListItem(String(localStorage.getItem("api")), JSON.parse(String(localStorage.getItem("api_list"))));
+
+if (localStorage.getItem("initial")) {
+    apiList.value = getApiListItem(String(localStorage.getItem("api")), JSON.parse(String(localStorage.getItem("api_list"))));
+}
 if (localStorage.getItem("initial")) {
     axios.defaults.baseURL = apiList.value?.path;
 }
 if (localStorage.getItem("initial")) {
     axios.defaults.headers["X-API-KEY"] = String(apiList.value?.key);
 }
-axios.defaults.timeout = 5000;
+axios.defaults.timeout = 10000;
 
 const Noir = definePreset(Aura, {
     semantic: {

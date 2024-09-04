@@ -16,5 +16,5 @@ async def index(path: str = Body(..., embed=True)):
     except Exception as e:
         return JSONResponse(
             status_code=500,
-            content={"status": 500, "message": "error", "results": str(e)},
+            content={"status": 500, "message": "server error", "results": str(e)},
         )

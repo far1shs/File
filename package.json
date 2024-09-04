@@ -13,6 +13,7 @@
     "@primevue/themes": "^4.0.0",
     "axios": "^1.7.2",
     "chart.js": "^4.4.3",
+    "monaco-editor-vue3": "^0.1.10",
     "primeicons": "^7.0.0",
     "primevue": "^4.0.0",
     "pubsub-js": "^1.9.4",

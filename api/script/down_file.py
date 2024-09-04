@@ -5,8 +5,8 @@ from fastapi.responses import FileResponse, JSONResponse
 app = APIRouter()
 
 
-@app.get("/down_file")
-async def index(path: str):
+@app.post("/down_file")
+async def index(path: str = Body(..., embed=True)):
     try:
         path = os.path.join("files", path)
 
@@ -24,5 +24,5 @@ async def index(path: str):
     except Exception as e:
         return JSONResponse(
             status_code=500,
-            content={"code": 500, "message": "Server Error", "results": e},
+            content={"code": 500, "message": "server error", "results": str(e)},
         )

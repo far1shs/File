@@ -3,7 +3,9 @@
     <n-scrollbar>
       <ul class="menu">
         <li v-tooltip.bottom="{value: `可用空间: ${formatBytes(item.free)}\n已用空间: ${formatBytes(item.used)}\n总空间: ${formatBytes(item.total)}\n文件系统: ${item.fstype}`, showDelay: 800,}"
-            @click="selectItem(item.device)" v-for="item in props.list" :key="item.device">
+            @click="selectItem(item.mountpoint)"
+            v-for="(item, index) in props.list"
+            :style="{ animationDelay: `${index * 0.05}s` }">
           <div class="icon-label">
             <i class="pi pi-inbox"></i>
             <n-flex :size="0" vertical class="flex-container">
@@ -21,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import {defineProps, Ref, ref} from "vue";
+import {defineProps} from "vue";
 import {formatBytes} from "../script/tool.ts";
 import {getRess} from "../script/action.ts";
 import {menuShow} from "../model/navigation.ts";
@@ -56,6 +58,8 @@ function selectItem(path: string) {
   cursor: pointer;
   transition: background-color 0.3s ease, color 0.3s ease, transform 0.1s ease;
   padding-left: 15px;
+  transform: translateY(50px);
+  animation: fadeInUp 0.5s forwards;
 }
 
 .side-navigation .icon-label {
@@ -124,5 +128,12 @@ function selectItem(path: string) {
 .progress-bar {
   width: 100%;
   height: 7px;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>
