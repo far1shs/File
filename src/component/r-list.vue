@@ -6,7 +6,8 @@
         <li @contextmenu="menuClick($event, item)"
             @click="item.is_directory ? getRess(item.path) : editorRequest(item.path, message)"
             v-for="(item, index) in props.list" :key="item.path"
-            :style="{ animationDelay: `${index * 0.05}s` }">
+            :style="{ animationDelay: `${index * 0.05}s` }"
+            :class="{'animated': isAnimated(index)}">
           <div class="icon-label">
             <i v-if="item.is_directory" class="pi pi-folder"></i>
             <i v-else-if="isImageFile(item.type)" class="pi pi-image"></i>
@@ -26,29 +27,49 @@
       </ul>
     </n-scrollbar>
 
-    <ContextMenu ref="menu" :model="items" @hide="item_data = null"/>
+    <ContextMenu ref="menu" :model="items" @hide="dataObjectTemp = null"/>
 
-    <Dialog v-model:visible="renameFileShow" modal header="重命名" :style="{ width: '25rem' }">
-      <InputText v-model="newName" style="width: 100%" placeholder="输入新名称"/>
+    <Dialog v-model:visible="newFileShow" modal header="新建文件" style="width: 350px">
+      <InputText v-model="newFileName" style="width: 100%" placeholder="输入文件名"/>
 
-      <div style="float: right; margin-top: 20px">
-        <n-flex>
-          <Button label="取消" severity="secondary" @click="renameFileShow = false"></Button>
-          <Button label="确定" @click="renameFile"></Button>
-        </n-flex>
+      <div style="margin-top: 20px">
+        <n-grid :cols="2" :x-gap="12">
+          <n-gi>
+            <Button style="width: 100%" label="取消" severity="secondary" @click="newFileShow = false"></Button>
+          </n-gi>
+          <n-gi>
+            <Button style="width: 100%" label="确定" @click="newFile"></Button>
+          </n-gi>
+        </n-grid>
+      </div>
+    </Dialog>
+
+    <Dialog v-model:visible="renameFileShow" modal header="重命名" style="width: 350px">
+      <InputText v-model="dataObject.name" style="width: 100%" placeholder="输入新名称"/>
+
+      <div style="margin-top: 20px">
+        <n-grid :cols="2" :x-gap="12">
+          <n-gi>
+            <Button style="width: 100%" label="取消" severity="secondary" @click="renameFileShow = false"></Button>
+          </n-gi>
+          <n-gi>
+            <Button style="width: 100%" label="确定" @click="renameFile"></Button>
+          </n-gi>
+        </n-grid>
       </div>
     </Dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import {defineProps, nextTick, ref} from "vue";
+import {defineProps, ref} from "vue";
 import {editorRequest, getRess, simpleRequest} from "../script/action.ts";
 import {useMessage} from "naive-ui";
 import axios from "axios";
 import {formatBytes} from "../script/tool.ts";
-import {ress} from "../model";
+import {path, ress} from "../model";
 import {MessageReactive} from "naive-ui/lib";
+import {dataObject} from "../model/index.ts";
 
 const message = useMessage();
 const props = defineProps<{
@@ -56,14 +77,14 @@ const props = defineProps<{
 }>();
 const menu = ref();
 // const selectedItems = ref([]);
+const dataObjectTemp = ref();
 
-const item_data = ref();
 const items = ref([
   {
     label: "下载",
     icon: "pi pi-download",
     command: async () => {
-      const res = item_data.value;
+      const res = dataObjectTemp.value;
       let messageReactive: MessageReactive | null = null
 
       messageReactive = message.loading("加载中", {
@@ -95,36 +116,47 @@ const items = ref([
   }, {
     separator: true
   }, {
-    label: "新建文件",
-    icon: "pi pi-plus",
-    command: () => simpleRequest("/new_file", item_data.value.path, message)
-  }, {
-    label: "新建文件夹",
-    icon: "pi pi-plus",
-    command: () => simpleRequest("/new_folder", item_data.value.path, message)
-  }, {
     label: "压缩",
     icon: "pi pi-bolt",
-    command: () => simpleRequest("/zip_file", item_data.value.path, message)
+    command: () => simpleRequest("/zip_file", dataObjectTemp.value.path, message)
   }, {
     label: "重命名",
     icon: "pi pi-pencil",
     command: () => {
-      newName.value = item_data.value.name;
+      dataObject.value = JSON.parse(JSON.stringify(dataObjectTemp.value))
       renameFileShow.value = true;
     }
   }, {
     label: "删除",
     icon: "pi pi-trash",
     command: () => {
-      simpleRequest("/delete", item_data.value.path, message, {
+      simpleRequest("/delete", dataObjectTemp.value.path, message, {
         request: false,
         click: (dataObject: any) => {
           ress.value = ress.value.filter((item: any) => item.name !== dataObject.name);
         },
-        dataObject: item_data.value
+        dataObject: dataObjectTemp.value
       });
     }
+  }, {
+    separator: true
+  }, {
+    label: "新建",
+    icon: "pi pi-plus",
+    items: [
+      {
+        label: "新建文件",
+        icon: "pi pi-file",
+        command: () => {
+          dataObject.value = JSON.parse(JSON.stringify(dataObjectTemp.value))
+          newFileShow.value = true;
+        }
+      }, {
+        label: "新建文件夹",
+        icon: "pi pi-folder",
+        command: () => simpleRequest("/new_folder", dataObjectTemp.value.path, message)
+      }
+    ]
   }, {
     separator: true
   }, {
@@ -134,14 +166,42 @@ const items = ref([
   }
 ]);
 
-const newName = ref("");
+const newFileShow = ref(false);
+const newFileName = ref("");
 const renameFileShow = ref(false);
 
+function newFile() {
+  simpleRequest("/new_file", "", message, {
+    data: {
+      path: path.value,
+      name: "213.txt"
+    },
+    click: (dataObject: any, res: any, newFileShowValue: boolean) => {
+      // const index = ress.value.findIndex((item: any) => item.path === dataObject.path);
+      //
+      // ress.value[index].name = dataObject.name;
+      // ress.value[index].path = res.data.results
+      newFileShow.value = newFileShowValue;
+    },
+  });
+}
+
 function renameFile() {
-  // simpleRequest("/rename", item_data.value.path, message);
-  nextTick(() => {
-    console.log(item_data.value);
-    // simpleRequest("/rename", item_data.value.path, message);
+  simpleRequest("/rename", "", message, {
+    data: {
+      path: dataObject.value.path,
+      new_path: dataObject.value.name
+    },
+    click: (dataObject: any, res: any, renameFileShowValue: boolean) => {
+      const index = ress.value.findIndex((item: any) => item.path === dataObject.path);
+
+      ress.value[index].name = dataObject.name;
+      ress.value[index].path = res.data.results;
+      renameFileShow.value = renameFileShowValue;
+    },
+    resource: true,
+    dataObject: dataObject.value,
+    request: false
   });
 }
 
@@ -157,8 +217,19 @@ function isZipFile(type: string): boolean {
 
 function menuClick(event: any, data: any) {
   menu.value.show(event);
-  item_data.value = data;
+  dataObjectTemp.value = data;
 }
+
+const animatedItems = ref([]);
+
+function isAnimated(index: any) {
+  return animatedItems.value.includes(<never>index);
+}
+
+setTimeout(() => {
+  animatedItems.value = props.list.map((item: any, index: any) => index);
+}, 1500);
+
 
 // function toggleSelection(item: any) {
 //   const index = selectedItems.value.indexOf(item);
@@ -267,5 +338,9 @@ function menuClick(event: any, data: any) {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.side-navigation li.animated {
+  transform: none;
 }
 </style>

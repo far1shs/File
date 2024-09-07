@@ -1,8 +1,7 @@
+import json, uvicorn,model,os
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-import uvicorn
-import model
 from script import (
     delete,
     get_disk,
@@ -64,11 +63,22 @@ app.add_middleware(
     allow_credentials=False,
 )
 
+
 if __name__ == "__main__":
+    if not os.path.exists("./args.json"):
+        with open("./args.json", "w", encoding="utf-8") as f:
+            json.dump(
+                {
+                    "server": {"API_KEY": "", "host": "0.0.0.0", "port": 10010},
+                    "filter": [],
+                },
+                f,
+                indent=4
+            )
+    
     args = model.args()
     uvicorn.run(
         app="main:app",
         host=args["server"]["host"],
         port=args["server"]["port"],
-        reload=True,
     )

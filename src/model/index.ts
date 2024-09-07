@@ -1,5 +1,6 @@
 import {ref} from "vue";
 
+export const dataObject = ref();
 export const ressLoading = ref(true);
 export const apiList: any = ref();
 export const editorShow = ref(false);

@@ -4,7 +4,6 @@ from fastapi.responses import JSONResponse
 
 app = APIRouter()
 
-# 指定要过滤的文件夹名称
 FILTERED_FOLDER_NAMES = {"$Recycle.Bin"}
 
 def custom_sort_key(item):

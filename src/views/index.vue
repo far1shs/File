@@ -39,9 +39,10 @@
                 style="position: fixed; background-color: white; width: 100%; z-index: 100; padding: 18px; border-bottom: 1px solid #E2E8F0">
               <div :style="screenWidth > 750 ? 'margin-right: 240px;' : ''" class="toolbar">
                 <Button :disabled="ressLoading" @click="back" severity="secondary" outlined icon="pi pi-angle-left"/>
-                <Button :loading="ressLoading" @click="getRess(path)" severity="secondary" outlined icon="pi pi-refresh"/>
+                <Button :loading="ressLoading" @click="getRess(path)" severity="secondary" outlined
+                        icon="pi pi-refresh"/>
                 <InputText v-model="path" @keydown.enter="getRess(path)" class="input-text"/>
-                <Button @click="menuClick($event)" severity="secondary" outlined icon="pi pi-bars"/>
+                <Button @click="toggleMenuCard($event)" severity="secondary" outlined icon="pi pi-bars"/>
               </div>
             </div>
           </n-layout-header>
@@ -69,8 +70,9 @@
 
         <n-drawer v-model:show="menuShow" placement="bottom" height="100%">
           <div style="margin: 10px 30px 0; display: flex; justify-content: space-between; align-items: center;">
-                <span style="display: flex; align-items: center;"><i style="margin-right: 12px; font-size: 1.5em;"
-                                                                     class="pi pi-inbox"></i>磁盘列表</span>
+                <span style="display: flex; align-items: center;">
+                  <i style="margin-right: 12px; font-size: 1.5em;" class="pi pi-inbox"></i>磁盘列表
+                </span>
             <i @click="menuShow = false" style="font-size: 1.5em; cursor: pointer" class="pi pi-times"></i>
           </div>
 
@@ -83,8 +85,9 @@
           <n-layout position="absolute">
             <n-layout-header position="absolute" style="height: 44px">
               <div style="margin: 10px 30px 0; display: flex; justify-content: space-between; align-items: center;">
-                <span style="display: flex; align-items: center;"><i style="margin-right: 12px; font-size: 1.5em;"
-                                                                     class="pi pi-file-edit"></i>编辑</span>
+                <span style="display: flex; align-items: center;">
+                  <i style="margin-right: 12px; font-size: 1.5em;" class="pi pi-file-edit"></i>编辑
+                </span>
                 <i @click="editorShow = false" style="font-size: 1.5em; cursor: pointer" class="pi pi-times"></i>
               </div>
             </n-layout-header>
@@ -111,6 +114,8 @@
           </template>
         </Menu>
 
+        <Menu style="padding: 5px" :popup="true" ref="menuCard" :model="menuLists" />
+
         <Dialog v-model:visible="uploadFileShow" modal header="上传文件" :style="{ width: '25rem' }">
           <n-upload
               :multiple="true"
@@ -133,7 +138,7 @@
             </n-upload-dragger>
           </n-upload>
         </Dialog>
-        
+
         <ContextMenu ref="menu" :model="items"/>
       </n-layout-content>
     </n-layout>
@@ -161,6 +166,13 @@ const message = useMessage();
 
 const apiCard = ref();
 const apiLists = ref(JSON.parse(String(localStorage.getItem("api_list"))));
+const menuCard = ref();
+const menuLists = [
+  {
+    label: "属性",
+    icon: "pi pi-info-circle",
+  }
+]
 const uploadFileShow = ref(false);
 const menu = ref();
 const items = ref([
@@ -210,12 +222,12 @@ function back() {
   getRess(path.value);
 }
 
-function menuClick(event: Event) {
-  menu.value.show(event);
-}
-
 function toggleApiCard(event: Event) {
   apiCard.value.toggle(event);
+}
+
+function toggleMenuCard(event: Event) {
+  menuCard.value.toggle(event);
 }
 </script>
 

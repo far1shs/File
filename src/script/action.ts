@@ -34,18 +34,20 @@ export function getRess(_path: string) {
 
 export function simpleRequest(
     _path: string,
-    file_path: string,
+    file_path: string = "",
     message: MessageApiInjection,
     {
         request = true,
         click = () => {},
         dataObject = null,
-        data = { path: file_path }
+        data = { path: file_path },
+        resource = false
     }: {
         request?: Boolean,
-        click?: Function,
+        click?: (...args: any[]) => void,
         dataObject?: any,
-        data?: any
+        data?: any,
+        resource?: boolean
     } = {}
 ): void {
     let messageReactive: MessageReactive | null = null;
@@ -55,10 +57,16 @@ export function simpleRequest(
     });
 
     const req = axios.post(_path, data);
-    req.then(() => {
+    req.then((res) => {
         message.success("成功");
-        if (request) getRess(path.value);
-        click(dataObject);
+        if (request) {
+            getRess(path.value);
+        }
+        if (resource) {
+            click(dataObject, res, /* 其他参数 */);
+        } else {
+            click(dataObject, /* 其他参数 */);
+        }
     });
     req.catch((err) => {
         message.error(err.response.data.message);
