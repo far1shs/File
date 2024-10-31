@@ -47,7 +47,7 @@ async def verify_api_key(request: Request, call_next):
             content={
                 "status": 403,
                 "message": "the key is incorrect",
-                "results": args["server"]["API_KEY"],
+                "results": None,
             },
         )
 

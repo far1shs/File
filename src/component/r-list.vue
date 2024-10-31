@@ -10,8 +10,6 @@
             :class="{'animated': isAnimated(index)}">
           <div class="icon-label">
             <i v-if="item.is_directory" class="pi pi-folder"></i>
-            <i v-else-if="isImageFile(item.type)" class="pi pi-image"></i>
-            <i v-else-if="isZipFile(item.type)" class="pi pi-box"></i>
             <i v-else class="pi pi-file"></i>
             <div style="width: 100%">
               <span class="label">{{ item.name }}</span>
@@ -29,7 +27,7 @@
 
     <ContextMenu ref="menu" :model="items" @hide="dataObjectTemp = null"/>
 
-    <Dialog v-model:visible="newFileShow" modal header="新建文件" style="width: 350px">
+    <Dialog v-model:visible="newFileShow" modal :draggable="false" header="新建文件" style="width: 350px">
       <InputText v-model="newFileName" style="width: 100%" placeholder="输入文件名"/>
 
       <div style="margin-top: 20px">
@@ -44,7 +42,7 @@
       </div>
     </Dialog>
 
-    <Dialog v-model:visible="renameFileShow" modal header="重命名" style="width: 350px">
+    <Dialog v-model:visible="renameFileShow" modal :draggable="false" header="重命名" style="width: 350px">
       <InputText v-model="dataObject.name" style="width: 100%" placeholder="输入新名称"/>
 
       <div style="margin-top: 20px">
@@ -65,10 +63,8 @@
 import {defineProps, ref} from "vue";
 import {editorRequest, getRess, simpleRequest} from "../script/action.ts";
 import {useMessage} from "naive-ui";
-import axios from "axios";
 import {formatBytes} from "../script/tool.ts";
-import {path, ress} from "../model";
-import {MessageReactive} from "naive-ui/lib";
+import {apiList, path, ress} from "../model";
 import {dataObject} from "../model/index.ts";
 
 const message = useMessage();
@@ -79,39 +75,12 @@ const menu = ref();
 // const selectedItems = ref([]);
 const dataObjectTemp = ref();
 
-const items = ref([
+const items: any = ref([
   {
     label: "下载",
     icon: "pi pi-download",
-    command: async () => {
-      const res = dataObjectTemp.value;
-      let messageReactive: MessageReactive | null = null
-
-      messageReactive = message.loading("加载中", {
-        duration: 0
-      })
-
-      try {
-        const req = await axios.post(`${axios.defaults.baseURL}/down_file`, {
-          "path": res.path
-        }, {
-          responseType: "blob"
-        });
-
-        const url = window.URL.createObjectURL(new Blob([req.data]));
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", res.name);
-        document.body.appendChild(link);
-        link.click();
-      } catch (e) {
-        message.error("下载错误");
-      }
-
-      if (messageReactive) {
-        messageReactive.destroy()
-        messageReactive = null
-      }
+    command: () => {
+      window.open(`${apiList.value?.path}/down_file/?path=${encodeURI(dataObjectTemp.value.path)}&api_key=${apiList.value?.key}`)
     }
   }, {
     separator: true
@@ -174,13 +143,9 @@ function newFile() {
   simpleRequest("/new_file", "", message, {
     data: {
       path: path.value,
-      name: "213.txt"
+      name: newFileName.value
     },
     click: (dataObject: any, res: any, newFileShowValue: boolean) => {
-      // const index = ress.value.findIndex((item: any) => item.path === dataObject.path);
-      //
-      // ress.value[index].name = dataObject.name;
-      // ress.value[index].path = res.data.results
       newFileShow.value = newFileShowValue;
     },
   });
@@ -205,19 +170,38 @@ function renameFile() {
   });
 }
 
-function isImageFile(type: string): boolean {
-  const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp", ".jfif", ".ico", ".avif"];
-  return imageExtensions.includes(type);
-}
-
-function isZipFile(type: string): boolean {
-  const zipExtensions = [".zip", ".rar", ".7z", ".tar", ".gz", ".bz2", ".tar.gz", ".tar.bz2"];
-  return zipExtensions.includes(type);
-}
-
 function menuClick(event: any, data: any) {
-  menu.value.show(event);
   dataObjectTemp.value = data;
+
+  let indexToRemove = items.value.findIndex((item: any) => item.label === "下载");
+
+  if (dataObjectTemp.value.is_directory) {
+    if (indexToRemove !== -1) {
+      items.value.splice(indexToRemove, 1);
+      indexToRemove = items.value.findIndex((item: any) => item.separator === true);
+      if (indexToRemove !== -1) {
+        items.value.splice(indexToRemove, 1);
+      }
+    }
+  } else {
+    if (indexToRemove === -1) {
+      items.value.unshift(
+          {
+            label: "下载",
+            icon: "pi pi-download",
+            command: () => {
+              const utf8Bytes = new TextEncoder().encode(str);
+              const base64Str = btoa(String.fromCharCode.apply(null, utf8Bytes));
+              window.open(`${apiList.value?.path}/down_file/?path=${base64Str}&api_key=${apiList.value?.key}`);
+            }
+          }, {
+            separator: true
+          }
+      );
+    }
+  }
+
+  menu.value.show(event);
 }
 
 const animatedItems = ref([]);

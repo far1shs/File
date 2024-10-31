@@ -116,7 +116,7 @@
 
         <Menu style="padding: 5px" :popup="true" ref="menuCard" :model="menuLists" />
 
-        <Dialog v-model:visible="uploadFileShow" modal header="上传文件" :style="{ width: '25rem' }">
+        <Dialog v-model:visible="uploadFileShow" modal :draggable="false" header="上传文件" :style="{ width: '25rem' }">
           <n-upload
               :multiple="true"
               directory-dnd
@@ -138,8 +138,6 @@
             </n-upload-dragger>
           </n-upload>
         </Dialog>
-
-        <ContextMenu ref="menu" :model="items"/>
       </n-layout-content>
     </n-layout>
   </n-layout>
@@ -169,23 +167,15 @@ const apiLists = ref(JSON.parse(String(localStorage.getItem("api_list"))));
 const menuCard = ref();
 const menuLists = [
   {
+    label: "上传",
+    icon: "pi pi-upload",
+    command: () => uploadFileShow.value = true
+  }, {
     label: "属性",
     icon: "pi pi-info-circle",
   }
 ]
 const uploadFileShow = ref(false);
-const menu = ref();
-const items = ref([
-  {
-    label: "上传",
-    icon: "pi pi-upload",
-    command: () => uploadFileShow.value = true
-  }, {
-    label: "多选",
-    icon: "pi pi-expand",
-    command: () => uploadFileShow.value = true
-  }
-]);
 
 const editorOptions = {
   colorDecorators: true,

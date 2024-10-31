@@ -42,7 +42,7 @@
         </n-flex>
       </n-scrollbar>
 
-      <Dialog v-model:visible="addApi.show" modal header="添加API" style="width: 350px">
+      <Dialog v-model:visible="addApi.show" modal :draggable="false" header="添加API" style="width: 350px">
         <n-flex vertical>
           <InputText v-model="addApi.name" style="width: 100%" placeholder="API 名称"/>
           <InputText v-model="addApi.path" style="width: 100%" placeholder="API 地址"/>
@@ -61,7 +61,7 @@
         </div>
       </Dialog>
 
-      <Dialog v-model:visible="deleteLocalStorageShow" modal header="清空缓存" style="width: 350px">
+      <Dialog v-model:visible="deleteLocalStorageShow" modal :draggable="false" header="清空缓存" style="width: 350px">
         <p>清空后, 您会重新进入欢迎页面, 您的数据不会有任何保留, API等等全部清空</p>
 
         <div style="margin-top: 20px">
